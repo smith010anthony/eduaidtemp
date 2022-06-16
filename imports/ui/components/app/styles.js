@@ -18,8 +18,17 @@ const ActionsBar = styled.section`
 
 const Layout = styled(FlexColumn)``;
 
+const mainappwrapper = styled.div`
+  width: 100%;
+  display: block;
+  overflow: hidden;
+  height: 300px;
+  position: relative;
+`;
+
 export default {
   CaptionsWrapper,
   ActionsBar,
   Layout,
+  mainappwrapper
 };

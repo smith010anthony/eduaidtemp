@@ -134,10 +134,11 @@ const SmartLayout = (props) => {
   const calculatesSidebarContentHeight = () => {
     let sidebarContentHeight = 0;
     if (sidebarContentInput.isOpen) {
+      let windowheight=windowHeight();
       if (isMobile) {
-        sidebarContentHeight = windowHeight() - DEFAULT_VALUES.navBarHeight;
+        sidebarContentHeight = windowheight - windowheight*0.4;// windowHeight() - DEFAULT_VALUES.navBarHeight;
       } else {
-        sidebarContentHeight = windowHeight();
+        sidebarContentHeight = windowheight; //windowHeight();
       }
       sidebarContentHeight -= bannerAreaHeight();
     }
@@ -169,7 +170,7 @@ const SmartLayout = (props) => {
     cameraDockBounds.left = mediaAreaBounds.left;
     cameraDockBounds.right = isRTL ? sidebarSize + (camerasMargin * 2) : null;
     cameraDockBounds.zIndex = 1;
-
+    console.log('[customLayout] @edu14 @calculatesCameraDockBounds mediaAreaBounds.height,mediaBounds.height',mediaAreaBounds.height,mediaBounds.height)
     if (mediaBounds.width < mediaAreaBounds.width) {
       cameraDockBounds.width = mediaAreaBounds.width - mediaBoundsWidth;
       cameraDockBounds.maxWidth = mediaAreaBounds.width * 0.8;
@@ -193,7 +194,7 @@ const SmartLayout = (props) => {
 
     cameraDockBounds.minWidth = cameraDockBounds.width;
     cameraDockBounds.minHeight = cameraDockBounds.height;
-
+    console.log('[customLayout] @edu14 @calculatesCameraDockBounds cameraDockBounds',cameraDockBounds)
     return cameraDockBounds;
   };
 

@@ -1,8 +1,13 @@
 import styled from 'styled-components';
 import { smallOnly } from '/imports/ui/stylesheets/styled-components/breakpoints';
 import { smPaddingX, smPaddingY } from '/imports/ui/stylesheets/styled-components/general';
-import { colorWhite } from '/imports/ui/stylesheets/styled-components/palette';
+import { colorWhite,
+  colorDanger,
+  colorGrayDark,
+  colorPrimary } from '/imports/ui/stylesheets/styled-components/palette';
 import Button from '/imports/ui/components/common/button/component';
+import { barsPadding, borderSize } from '/imports/ui/stylesheets/styled-components/general';
+
 
 const ActionsBar = styled.div`
   display: flex;
@@ -86,10 +91,56 @@ const RaiseHandButton = styled(Button)`
    `}
 `;
 
+const NavbarToggleButton = styled(Button)`
+  // color: ${colorPrimary};
+  // background-color: ${colorWhite};
+  ${({ ghost }) => ghost && `
+  span {
+    box-shadow: none;
+    color: ${colorWhite};
+    background-color: ${colorPrimary}; !important;
+    border-color: ${colorPrimary} !important;
+  }
+`}
+  margin: 0;
+  z-index: 3;
+
+  // &:hover,
+  // &:focus {
+  //   span {
+  //     background-color: transparent !important;
+  //     color: ${colorWhite} !important;
+  //     opacity: .75;
+  //   }
+  // }
+
+
+  
+
+  ${({ hasNotification }) => hasNotification && `
+    position: relative;
+
+    &:after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      width: 12px;
+      height: 12px;
+      bottom: ${borderSize};
+      right: 3px;
+      background-color: ${colorDanger};
+      border: ${borderSize} solid ${colorGrayDark};
+    }
+  `}
+  svg {
+    font-size: 200%;
+  }
+`;
 export default {
   ActionsBar,
   Left,
   Center,
   Right,
   RaiseHandButton,
+  NavbarToggleButton
 };

@@ -266,6 +266,7 @@ const reducer = (state, action) => {
 
     // SIDEBAR NAVIGATION
     case ACTIONS.SET_SIDEBAR_NAVIGATION_IS_OPEN: {
+      
       const { sidebarNavigation } = state.input;
       if (sidebarNavigation.isOpen === action.value) {
         return state;
@@ -401,6 +402,7 @@ const reducer = (state, action) => {
 
     // SIDEBAR CONTENT
     case ACTIONS.SET_SIDEBAR_CONTENT_IS_OPEN: {
+      console.log('SET_SIDEBAR_CONTENT_IS_OPEN', action.value, state);
       const { sidebarContent, sidebarNavigation } = state.input;
       if (sidebarContent.isOpen === action.value) {
         return state;
@@ -420,6 +422,7 @@ const reducer = (state, action) => {
       };
     }
     case ACTIONS.SET_SIDEBAR_CONTENT_PANEL: {
+      console.log('SET_SIDEBAR_CONTENT_PANEL', action.value, state);
       const { sidebarContent } = state.input;
       if (sidebarContent.sidebarContentPanel === action.value) {
         return state;
@@ -436,6 +439,7 @@ const reducer = (state, action) => {
       };
     }
     case ACTIONS.SET_SIDEBAR_CONTENT_SIZE: {
+      console.log('SET_SIDEBAR_CONTENT_SIZE', action.value, state);
       const {
         width,
         browserWidth,
@@ -464,6 +468,7 @@ const reducer = (state, action) => {
       };
     }
     case ACTIONS.SET_SIDEBAR_CONTENT_OUTPUT: {
+      console.log('SET_SIDEBAR_CONTENT_OUTPUT', action.value, state);
       const {
         display,
         minWidth,
@@ -778,6 +783,7 @@ const reducer = (state, action) => {
     // PRESENTATION
     case ACTIONS.SET_PRESENTATION_IS_OPEN: {
       const { presentation } = state.input;
+      console.log('[context] @edu14 SET_PRESENTATION_IS_OPEN presentation', presentation);
       if (presentation.isOpen === action.value) {
         return state;
       }
@@ -884,6 +890,7 @@ const reducer = (state, action) => {
       const {
         width, height, browserWidth, browserHeight,
       } = action.value;
+      console.log('[context] @edu14 SET_PRESENTATION_SIZE width, height, browserWidth, browserHeight', width, height, browserWidth, browserHeight);
       const { presentation } = state.input;
       if (presentation.width === width
         && presentation.height === height
@@ -937,6 +944,8 @@ const reducer = (state, action) => {
         && presentation.isResizable === isResizable) {
         return state;
       }
+      console.log('[context] @edu14 SET_PRESENTATION_OUTPUT action.value', action.value);
+      
       return {
         ...state,
         output: {

@@ -589,17 +589,21 @@ const hasPrivateChatBetweenUsers = (senderId, receiverId) => GroupChat
 
 const getGroupChatPrivate = (senderUserId, receiver) => {
   const chat = hasPrivateChatBetweenUsers(senderUserId, receiver.userId);
+  console.log('[user-list] service @getGroupChatPrivate chat', chat);
   if (!chat) {
     makeCall('createGroupChat', receiver);
   } else {
     const startedChats = Session.get(STARTED_CHAT_LIST_KEY) || [];
+    console.log('[user-list] service @getGroupChatPrivate startedChats', startedChats);
     if (_.indexOf(startedChats, chat.chatId) < 0) {
+      console.log('[user-list] service @getGroupChatPrivate 111111111');
       startedChats.push(chat.chatId);
       Session.set(STARTED_CHAT_LIST_KEY, startedChats);
     }
 
     const currentClosedChats = Storage.getItem(CLOSED_CHAT_LIST_KEY);
     if (_.indexOf(currentClosedChats, chat.chatId) > -1) {
+      console.log('[user-list] service @getGroupChatPrivate 22222222222');
       Storage.setItem(CLOSED_CHAT_LIST_KEY, _.without(currentClosedChats, chat.chatId));
     }
   }

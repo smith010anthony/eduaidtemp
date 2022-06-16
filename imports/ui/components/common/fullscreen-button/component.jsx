@@ -57,6 +57,7 @@ const FullscreenButtonComponent = ({
   fullScreenStyle,
   fullscreenRef,
   handleToggleFullScreen,
+  btncolor
 }) => {
   if (isIphone) return null;
 
@@ -87,7 +88,7 @@ const FullscreenButtonComponent = ({
 
   return (
     <Styled.FullscreenButtonWrapper
-      theme={dark ? 'dark' : 'light'}
+      theme={dark ? 'dark' : btncolor ? btncolor : 'light'}
       position={bottom ? 'bottom' : 'top'}
     >
       <Styled.FullscreenButton

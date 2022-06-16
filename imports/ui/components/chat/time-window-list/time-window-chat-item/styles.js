@@ -17,10 +17,22 @@ import {
   colorGrayLighter,
   colorPrimary,
   colorText,
+  colorOffWhite,
+  colorWhite
 } from '/imports/ui/stylesheets/styled-components/palette';
 import MessageChatItem from './message-chat-item/component';
 import Icon from '/imports/ui/components/common/icon/component';
 
+const ItemUpper = styled.div`
+  padding: calc(${lineHeightComputed} / 4) 0 calc(${lineHeightComputed} / 2) 0;
+  font-size: ${fontSizeBase};
+  pointer-events: auto;
+  [dir="rtl"] & {
+    direction: rtl;
+  }
+  // box-shadow: 0px 1px 4px 1px rgb(0 0 0 / 20%);
+  
+`;
 const Item = styled.div`
   padding: calc(${lineHeightComputed} / 4) 0 calc(${lineHeightComputed} / 2) 0;
   font-size: ${fontSizeBase};
@@ -28,6 +40,8 @@ const Item = styled.div`
   [dir="rtl"] & {
     direction: rtl;
   }
+  box-shadow: 1px 1px 0px 1px #000;
+  // background-color: #ddd;
 `;
 
 const Messages = styled.div`
@@ -40,19 +54,20 @@ const Messages = styled.div`
 
 const SystemMessageChatItem = styled(MessageChatItem)`
   ${({ border }) => border && `
-    background: ${systemMessageBackgroundColor};
+    // background: ${systemMessageBackgroundColor};
     border: 1px solid ${systemMessageBorderColor};
     border-radius: ${borderRadius};
     font-weight: ${btnFontWeight};
     padding: ${fontSizeBase};
-    color: ${systemMessageFontColor};
+    // color: ${systemMessageFontColor};
     margin-top: 0px;
     margin-bottom: 0px;
     overflow-wrap: break-word;
+    // display:none;
   `}
 
   ${({ border }) => !border && `
-    color: ${systemMessageFontColor};
+    // color: ${systemMessageFontColor};
     margin-top: 0px;
     margin-bottom: 0px;
   `}
@@ -109,6 +124,7 @@ const Name = styled.div`
   min-width: 0;
   font-weight: 600;
   position: relative;
+  // color: ${colorOffWhite};
 
   &:first-child {
     min-width: 0;
@@ -119,10 +135,11 @@ const Name = styled.div`
   }
 
   ${({ isOnline }) => isOnline && `
-    color: ${colorHeading};
+    color: ${colorWhite};
   `}
 
   ${({ isOnline }) => !isOnline && `
+    color: ${colorOffWhite};
     text-transform: capitalize;
     font-style: italic;
 
@@ -170,7 +187,7 @@ const ChatItem = styled(MessageChatItem)`
   flex: 1;
   margin-top: calc(${lineHeightComputed} / 3);
   margin-bottom: 0;
-  color: ${colorText};
+  color: ${colorGrayLighter};
   word-wrap: break-word;
 
   ${({ hasLink }) => hasLink && `
@@ -204,6 +221,7 @@ const PollMessageChatItem = styled(MessageChatItem)`
 `;
 
 export default {
+  ItemUpper,
   Item,
   Messages,
   SystemMessageChatItem,

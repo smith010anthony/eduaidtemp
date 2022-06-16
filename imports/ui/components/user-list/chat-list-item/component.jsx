@@ -85,6 +85,7 @@ const ChatListItem = (props) => {
 
   useEffect(() => {
     if (chat.userId !== PUBLIC_CHAT_KEY && chat.userId === idChatOpen) {
+      console.log('[user-list] chatListItem @edu14', chat.userId,chat.chatId,idChatOpen);
       layoutContextDispatch({
         type: ACTIONS.SET_ID_CHAT_OPEN,
         value: chat.chatId,

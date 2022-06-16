@@ -33,7 +33,8 @@ import '/imports/api/voice-call-states/server';
 import '/imports/api/log-client/server';
 import '/imports/api/common/server/helpers';
 import '/imports/startup/server/logger';
-
+import '/imports/startup/server/knexConnection';
+import '/imports/api/predefined-polls/server';
 // Needed for Atmosphere package RocketChat/meteor-streamer
 // It is out of date and was written when Meteor contained lodash
 // package. However, we now import lodash as an npm package

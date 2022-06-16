@@ -7,6 +7,7 @@ import PollingService from './service';
 import PollService from '/imports/ui/components/poll/service';
 import PollingComponent from './component';
 import { isPollingEnabled } from '/imports/ui/services/features';
+import PredefinedPolls from '/imports/api/predefined-polls';
 
 const propTypes = {
   pollExists: PropTypes.bool.isRequired,
@@ -37,11 +38,17 @@ export default withTracker(() => {
     Meteor.subscribe('polls', isResponse);
   }
 
+  let id = null;
+  if (pollExists && poll && poll.answers[0]) {
+    id = +poll.answers[0].key;
+  }
+
   return ({
     pollExists,
     handleVote,
     handleTypedVote,
     poll,
+    pdPoll: id ? PredefinedPolls.findOne({ meetingId: Auth.meetingID, id }) : {},
     pollAnswerIds: PollService.pollAnswerIds,
     pollTypes,
     isDefaultPoll: PollService.isDefaultPoll,

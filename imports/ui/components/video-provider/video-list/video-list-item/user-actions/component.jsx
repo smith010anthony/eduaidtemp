@@ -5,6 +5,13 @@ import VideoService from '/imports/ui/components/video-provider/service';
 import BBBMenu from '/imports/ui/components/common/menu/component';
 import PropTypes from 'prop-types';
 import Styled from './styles';
+import ViewActions from '/imports/ui/components/video-provider/video-list/video-list-item/view-actions/component';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+
+library.add(fas)
 
 const intlMessages = defineMessages({
   focusLabel: {
@@ -42,6 +49,7 @@ const intlMessages = defineMessages({
 const UserActions = (props) => {
   const {
     name, cameraId, numOfStreams, onHandleVideoFocus, user, focused, onHandleMirror,
+    isFullscreenContext, layoutContextDispatch, videoContainer
   } = props;
 
   const intl = useIntl();
@@ -81,6 +89,69 @@ const UserActions = (props) => {
 
     return menuItems;
   };
+
+  const pinned = user?.pin;
+  const userId = user?.userId;
+  const isPinnedIntlKey = !pinned ? 'pin' : 'unpin';
+  const isFocusedIntlKey = !focused ? 'focus' : 'unfocus';
+  const isIphone = !!(navigator.userAgent.match(/iPhone/i));
+  return (
+    <>
+    {!isFullscreenContext ?
+      <>
+    <Styled.CommonButton
+      
+      color={'default'}
+      customIcon={<FontAwesomeIcon icon={['fas', 'yin-yang']} />}
+      size="sm"
+      onClick= {() => onHandleMirror()}
+      label={ intl.formatMessage(intlMessages.mirrorLabel)}
+      description={ intl.formatMessage(intlMessages.mirrorDesc)}
+      hideLabel
+      //isStyled={fullScreenStyle}
+      data-test="presentationFullscreenButton"
+    />
+    {numOfStreams > 2 ?
+    <Styled.CommonButton
+      color={'default'}
+      customIcon={<FontAwesomeIcon icon={['fas', 'users-rectangle']} />}
+      size="sm"
+      onClick={() => onHandleVideoFocus(cameraId)}
+      label={ intl.formatMessage(intlMessages[`${isFocusedIntlKey}Label`])}
+      description={ intl.formatMessage(intlMessages[`${isFocusedIntlKey}Desc`])}
+      hideLabel
+      //isStyled={fullScreenStyle}
+      data-test="presentationFullscreenButton"
+    />
+    : null}
+    {VideoService.isVideoPinEnabledForCurrentUser() ?
+    <Styled.CommonButton
+      color={'default'}
+      customIcon={<FontAwesomeIcon icon={['fas', 'thumbtack']} />}
+      size="sm"
+      onClick={() => VideoService.toggleVideoPin(userId, pinned)}
+      label= {intl.formatMessage(intlMessages[`${isPinnedIntlKey}Label`])}
+      description= {intl.formatMessage(intlMessages[`${isPinnedIntlKey}Desc`])}
+      hideLabel
+      //isStyled={fullScreenStyle}
+      data-test="presentationFullscreenButton"
+    />
+    : null}
+
+    {isIphone ? null :
+      <ViewActions
+        videoContainer={videoContainer}
+        name={name}
+        cameraId={cameraId}
+        isFullscreenContext={isFullscreenContext}
+        layoutContextDispatch={layoutContextDispatch}
+        //btncolor={'blue'}
+      />
+    }
+      </>
+      : null}
+    </>
+  )
 
   return (
     <Styled.MenuWrapper>

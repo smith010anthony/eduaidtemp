@@ -120,6 +120,8 @@ const JoinVideoButton = ({
   );
 
   return (
+    <>
+    {!disableReason ?
     <Styled.OffsetBottom>
       <Styled.VideoButton
         label={label}
@@ -135,6 +137,8 @@ const JoinVideoButton = ({
       />
       {renderEmojiButton()}
     </Styled.OffsetBottom>
+    : null }
+    </>
   );
 };
 

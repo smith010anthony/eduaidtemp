@@ -55,6 +55,71 @@ const GlobalStyle = createGlobalStyle`
     animation: fade-in .5s ease-in;
   }
 
+  .selectQuestion{
+    color: var(--color-text);
+    margin: 0 0 1.2rem;
+
+    > div {
+      border-radius: var(--border-radius);
+    }
+  }
+
+  .pollnewBtn {
+    margin-top: var(--sm-padding-y);
+    margin-bottom: var(--sm-padding-y);
+    background-color: var(--color-white);
+    padding: var(--btn-lg-padding);
+    border: 1px solid hsl(0, 0%, 80%);
+    transition: all 100ms ease-in-out;
+  
+    > span {
+      color: var(--color-gray);
+    }
+  
+    &[aria-disabled="false"]:not(.active):hover {
+      //box-shadow: 0 0 0 1px var(--poll-blue);
+      background-color: var(--color-white);
+      border-color: #2684FF;
+  
+      > span {
+        color: var(--color-gray);
+        opacity: 1;
+      }
+    }
+  
+    &.active {
+      box-shadow: 0 0 0 1px var(--poll-blue);
+      outline: none;
+      border-color: var(--poll-blue);
+  
+      > span {
+        color: var(--color-gray-darkest);
+        opacity: 1;
+      }
+    }
+  }
+  
+
+  .pollBtn:nth-child(even) {
+    margin-right: inherit;
+    margin-left: var(--sm-padding-y);
+  
+    [dir="rtl"] & {
+      margin-right: var(--sm-padding-y);
+      margin-left: inherit;
+    }
+  }
+  
+  .pollBtn:nth-child(odd) {
+    margin-right: var(--sm-padding-y);
+    margin-left: inherit;
+  
+    [dir="rtl"] & {
+      margin-right: inherit;
+      margin-left: var(--sm-padding-y);
+    }
+  }
+
   .modalOverlay {
     z-index: 1000;
     display: flex;

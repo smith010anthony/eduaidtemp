@@ -14,6 +14,9 @@ import UserInfos from '/imports/api/users-infos';
 import Settings from '/imports/ui/services/settings';
 import MediaService from '/imports/ui/components/media/service';
 import _ from 'lodash';
+
+import PollResultContainer from '../poll-result/container';
+import Polls from '../../../api/polls';
 import {
   layoutSelect,
   layoutSelectInput,
@@ -141,7 +144,7 @@ const currentUserEmoji = (currentUser) => (currentUser
   }
 );
 
-export default injectIntl(withModalMounter(withTracker(({ intl, baseControls }) => {
+export default injectIntl(withModalMounter(withTracker(({ intl, baseControls,mountModal }) => {
   Users.find({ userId: Auth.userID, meetingId: Auth.meetingID }).observe({
     removed() {
       endMeeting('403');
@@ -195,6 +198,16 @@ export default injectIntl(withModalMounter(withTracker(({ intl, baseControls }) 
     customStyleUrl = CUSTOM_STYLE_URL;
   }
 
+  const openPollResultModal = () => {
+    console.log('[app] @edu20 - openPollResultModal');
+    if (Meteor.status().connected) {
+      return new Promise((resolve) => {
+        mountModal(<PollResultContainer resolve={resolve} />);
+      });
+    }
+    return null;
+  };
+
   const LAYOUT_CONFIG = Meteor.settings.public.layout;
 
   return {
@@ -233,6 +246,7 @@ export default injectIntl(withModalMounter(withTracker(({ intl, baseControls }) 
     autoSwapLayout: getFromUserSettings('bbb_auto_swap_layout', LAYOUT_CONFIG.autoSwapLayout),
     hideActionsBar: getFromUserSettings('bbb_hide_actions_bar', false),
     isModalOpen: !!getModal(),
+    openPollResultModal,
   };
 })(AppContainer)));
 

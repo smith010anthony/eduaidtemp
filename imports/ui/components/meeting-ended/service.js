@@ -5,6 +5,7 @@ import Auth from '/imports/ui/services/auth';
 export default function allowRedirectToLogoutURL() {
   const ALLOW_DEFAULT_LOGOUT_URL = Meteor.settings.public.app.allowDefaultLogoutUrl;
   const protocolPattern = /^((http|https):\/\/)/;
+  //return false;
   if (Auth.logoutURL) {
     // default logoutURL
     // compare only the host to ignore protocols

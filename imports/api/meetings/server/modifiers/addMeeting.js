@@ -15,6 +15,7 @@ import { addAnnotationsStreamer } from '/imports/api/annotations/server/streamer
 import { addCursorStreamer } from '/imports/api/cursor/server/streamer';
 import { addExternalVideoStreamer } from '/imports/api/external-videos/server/streamer';
 import { LAYOUT_TYPE } from '/imports/ui/components/layout/enums';
+import addPredefinedPolls from '../../../predefined-polls/server/modifiers/addPredefinedPolls';
 
 const addExternalVideo = (meetingId) => {
   const selector = { meetingId };
@@ -37,7 +38,8 @@ const addExternalVideo = (meetingId) => {
 
 export default function addMeeting(meeting) {
   const meetingId = meeting.meetingProp.intId;
-
+  const extMeetingId = meeting.meetingProp.extId;
+  
   check(meetingId, String);
   check(meeting, {
     breakoutProps: {
@@ -215,6 +217,7 @@ export default function addMeeting(meeting) {
   addExternalVideo(meetingId);
 
   try {
+    addPredefinedPolls(meetingId, extMeetingId);
     const { insertedId, numberAffected } = Meetings.upsert(selector, modifier);
 
     if (insertedId) {

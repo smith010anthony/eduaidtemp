@@ -11,7 +11,7 @@ public:
     listenOnlyMode: true
     forceListenOnly: false
     # Skips the echo test when connecting with microphone.
-    skipCheck: false
+    skipCheck: true
     # Skips the echo test when connecting with microphone right after user
     # joins the room the first time. Subsequent joins to microphone won't
     # have echo test skipped, for example if user leaves and joins the mic
@@ -26,13 +26,13 @@ public:
     # "media.setsinkid.enabled" to make it work properly
     # enableDynamicAudioDeviceSelection: true
     #
-    clientTitle: BigBlueButton
-    appName: BigBlueButton HTML5 Client
-    bbbServerVersion: HTML5_FULL_BBB_VERSION
+    clientTitle: SIQES EDUAID LLP
+    appName: EduAid Learning for all...
+    bbbServerVersion: 2.5.rc.1
     displayBbbServerVersion: true
-    copyright: '©2022 BigBlueButton Inc.'
-    html5ClientBuild: HTML5_CLIENT_VERSION
-    helpLink: https://bigbluebutton.org/html5/
+    copyright: '©2022 SIQES EDUAID LLP.'
+    html5ClientBuild: EDUAID
+    helpLink: https://eduaid.co.in/
     lockOnJoin: true
     cdn: ''
     basename: '/html5client'
@@ -51,7 +51,7 @@ public:
     askForFeedbackOnLogout: false
     # the default logoutUrl matches window.location.origin i.e. bigbluebutton.org for demo.bigbluebutton.org
     # in some cases we want only custom logoutUrl to be used when provided on meeting create. Default value: true
-    allowDefaultLogoutUrl: true
+    allowDefaultLogoutUrl: false
     allowUserLookup: false
     dynamicGuestPolicy: true
     enableGuestLobbyMessage: true
@@ -206,7 +206,7 @@ public:
   externalVideoPlayer:
     enabled: true
   kurento:
-    wsUrl: HOST
+    wsUrl: wss://bbbdev.siqeseduaid.com/bbb-webrtc-sfu
     # Valid for video-provider. Time (ms) before its WS connection times out
     # and tries to reconnect.
     wsConnectionTimeout: 4000
@@ -320,6 +320,14 @@ public:
           width: 1280
           height: 720
           frameRate: 30
+      - id: uhd
+        name: Ultra High definition
+        default: false
+        bitrate: 2000
+        constraints:
+          width: 1920
+          height: 1080
+          frameRate: 50
     enableScreensharing: true
     enableVideo: true
     enableVideoMenu: true
@@ -450,7 +458,7 @@ public:
     timeBetweenFetchs: 1000
     enableSaveAndCopyPublicChat: true
     bufferChatInsertsMs: 0
-    startClosed: false
+    startClosed: true #edu14
     min_message_length: 1
     max_message_length: 5000
     grouping_messages_window: 10000
@@ -473,10 +481,25 @@ public:
   notes:
     enabled: true
     id: notes
+  sftp:
+    host: 52.66.195.180
+    port: 22
+    username: eduaiduser
+    password: BCivbVKtFWy+t3KQoM9eAaeEw4XVfM0J5
+    imageLocation: uploads/admin/poll_question_images
+    fileUrl: https://inthenameofholygod.com/api/v1/download-file/
+    encryptPassphrase: LEYwpNZarvd55xl7xCdOXkbmqzbfYhCc
+  db:
+    client: pg
+    host: eduaid-prod-playstore.cmzvhbahry6x.ap-south-1.rds.amazonaws.com
+    port: 30011
+    database: eduaidplay
+    user: postgresmastereduaid
+    password: YDSbGLzrD0GS2cKMRtNdMD5ZuzjtE34AAthdLc3X54mXlMJSS
   layout:
     autoSwapLayout: false
-    hidePresentation: false
-    showParticipantsOnLogin: true
+    hidePresentation: true #edu14
+    showParticipantsOnLogin: false #edu14
   pads:
     url: ETHERPAD_HOST
     cookie:
@@ -551,7 +574,7 @@ public:
     # Number of reconnection attempts of the signaling websocket, before
     # showing to the user there's an audio error.
     audioReconnectionAttempts: 3
-    sipjsHackViaWs: false
+    sipjsHackViaWs: true
     # the fqdn of this host.
     # If you run a traditional setup of multiple nodes behind scalelite and the users see the hostnames of the
     # individual nodes, you can leave this at the default setting

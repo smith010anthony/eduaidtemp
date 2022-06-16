@@ -15,15 +15,17 @@ import {
 import { DivElipsis } from '/imports/ui/stylesheets/styled-components/placeholders';
 
 const Chat = styled.div`
-  background-color: ${colorWhite};
+  background-color: #161616; 
+  // ${colorGrayDark};
   padding: ${mdPaddingX} ${mdPaddingY} ${mdPaddingX} ${mdPaddingX};
-
+  // box-shadow: -1px 5px 2px 1px #fff;
   display: flex;
   flex-grow: 1;
   flex-direction: column;
   justify-content: space-around;
   overflow: hidden;
   height: 100%;
+  // border-top: 1px solid #fff;
 
   ${({ isChrome }) => isChrome && `
     transform: translateZ(0);
@@ -51,37 +53,49 @@ const Title = styled(DivElipsis)`
   }
 `;
 
-const HideChatButton = styled(Button)`
-  position: relative;
-  background-color: ${colorWhite};
-  display: block;
-  margin: ${borderSizeLarge};
-  margin-bottom: ${borderSize};
-  padding-left: 0;
-  padding-right: inherit;
-  z-index: 3;
+const PrivateChatButton = styled(Button)`
+ //color: ${colorWhite};
+}`;
 
-  [dir="rtl"] & {
-    padding-left: inherit;
-    padding-right: 0;
-  }
+const HideChatButton = styled.span`//styled(Button)\`
+  // position: relative;
+  // // background-color: ${colorWhite};
+  // // color: ${colorWhite};
+  // display: block;
+  // margin: ${borderSizeLarge};
+  // margin-bottom: ${borderSize};
+  // // padding-left: 0;
+  // // padding-right: inherit;
+  // z-index: 3;
 
-  & > i {
-      color: ${colorGrayDark};
-      font-size: smaller;
+  // [dir="rtl"] & {
+  //   padding-left: inherit;
+  //   padding-right: 0;
+  // }
 
-      [dir="rtl"] & {
-        -webkit-transform: scale(-1, 1);
-        -moz-transform: scale(-1, 1);
-        -ms-transform: scale(-1, 1);
-        -o-transform: scale(-1, 1);
-        transform: scale(-1, 1);
-      }
-  }
+  // & > i {
+  //     color: ${colorGrayDark};
+  //     font-size: smaller;
 
-  &:hover {
-      background-color: ${colorWhite};
-  }
+  //     [dir="rtl"] & {
+  //       -webkit-transform: scale(-1, 1);
+  //       -moz-transform: scale(-1, 1);
+  //       -ms-transform: scale(-1, 1);
+  //       -o-transform: scale(-1, 1);
+  //       transform: scale(-1, 1);
+  //     }
+  // }
+
+  // &:hover {
+  //     // background-color: ${colorWhite};
+  // }
+  width: 50%;
+  background-color: transparent;
+  color: #fff;
+  text-align: center;
+  padding: 5px;
+  // font-size: 2em;
+  cursor: pointer;
 `;
 
 export default {
@@ -89,4 +103,5 @@ export default {
   Header,
   Title,
   HideChatButton,
+  PrivateChatButton
 };

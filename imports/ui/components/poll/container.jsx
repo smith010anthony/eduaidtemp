@@ -9,6 +9,7 @@ import Service from './service';
 import Auth from '/imports/ui/services/auth';
 import { UsersContext } from '../components-data/users-context/context';
 import { layoutDispatch, layoutSelectInput } from '../layout/context';
+import Meetings from '../../../api/meetings';
 
 const CHAT_CONFIG = Meteor.settings.public.chat;
 const PUBLIC_CHAT_KEY = CHAT_CONFIG.public_id;
@@ -40,6 +41,7 @@ const PollContainer = ({ ...props }) => {
 export default withTracker(() => {
   const isPollSecret = Session.get('secretPoll') || false;
   Meteor.subscribe('current-poll', isPollSecret);
+  Meteor.subscribe('predefined-polls');
 
   const currentPresentation = Presentations.findOne({
     current: true,
@@ -57,18 +59,35 @@ export default withTracker(() => {
 
   const stopPoll = () => makeCall('stopPoll');
 
+  const updatePredefinedPoll = poll => makeCall('updatePredefinedPoll', poll);
+  const addPredefinedPoll = poll => makeCall('addPredefinedPoll', poll);
+
+  const currentMeeting = Meetings.findOne({ meetingId: Auth.meetingID },
+    {
+      fields: {
+        publishedPoll: 1, voiceProp: 1, poll: 1, publishedPollResult: 1,
+      },
+    });
+  const { publishedPoll, publishedPollResult } = currentMeeting;
+
+
   return {
     currentSlide,
     pollTypes,
     startPoll,
     startCustomPoll,
     stopPoll,
-    publishPoll: Service.publishPoll,
+    // publishPoll: Service.publishPoll,
     currentPoll: Service.currentPoll(),
     isDefaultPoll: Service.isDefaultPoll,
     checkPollType: Service.checkPollType,
+    predefinedPolls: Service.predefinedPolls(),
     resetPollPanel: Session.get('resetPollPanel') || false,
     pollAnswerIds: Service.pollAnswerIds,
     isMeteorConnected: Meteor.status().connected,
+    publishedPollResult,
+    amIPresenter: Service.amIPresenter(),
+    addPredefinedPoll,
+    updatePredefinedPoll,
   };
 })(PollContainer);

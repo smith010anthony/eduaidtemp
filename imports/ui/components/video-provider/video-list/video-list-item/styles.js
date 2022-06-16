@@ -11,6 +11,9 @@ const Content = styled.div`
   display: flex;
   min-width: 100%;
 
+  &:hover > .videoCenterBar {
+    display:flex;
+  }
   &::after {
     content: "";
     position: absolute;
@@ -160,6 +163,19 @@ const TopBar = styled.div`
   justify-content: space-between;
 `;
 
+const CenterBar = styled.div`
+
+  position: absolute;
+  display: none;
+  z-index: 1;
+  top: calc(50% - 10px);
+  left: calc(50% - 40px);
+  justify-content: space-between;
+  background-color: rgba(0,0,0);
+  border-radius: 15px;
+  padding: 5px 10px;
+`;
+
 const BottomBar = styled.div`
   position: absolute;
   display: flex;
@@ -179,4 +195,5 @@ export default {
   Video,
   TopBar,
   BottomBar,
+  CenterBar
 };

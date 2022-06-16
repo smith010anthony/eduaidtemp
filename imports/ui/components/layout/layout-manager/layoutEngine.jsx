@@ -8,7 +8,7 @@ import CustomLayout from '/imports/ui/components/layout/layout-manager/customLay
 import SmartLayout from '/imports/ui/components/layout/layout-manager/smartLayout';
 import PresentationFocusLayout from '/imports/ui/components/layout/layout-manager/presentationFocusLayout';
 import VideoFocusLayout from '/imports/ui/components/layout/layout-manager/videoFocusLayout';
-
+// import {isTabletPortrait} from '../utils';
 const propTypes = {
   layoutType: PropTypes.string.isRequired,
 };
@@ -31,6 +31,7 @@ const LayoutEngine = ({ layoutType }) => {
 
   const isMobile = deviceType === DEVICE_TYPE.MOBILE;
   const isTablet = deviceType === DEVICE_TYPE.TABLET;
+  const isTabletPortrait = deviceType === DEVICE_TYPE.TABLET_PORTRAIT;
   const windowWidth = () => window.document.documentElement.clientWidth;
   const windowHeight = () => window.document.documentElement.clientHeight;
   const min = (value1, value2) => (value1 <= value2 ? value1 : value2);
@@ -65,9 +66,9 @@ const LayoutEngine = ({ layoutType }) => {
     if (!isOpen || (isSmartLayout && currentSlideNumber === 0 && !hasExternalVideo && !hasScreenShare)) {
       cameraDockBounds.width = mediaAreaBounds.width;
       cameraDockBounds.maxWidth = mediaAreaBounds.width;
-      cameraDockBounds.height = mediaAreaBounds.height - bannerAreaHeight();
+      cameraDockBounds.height = mediaAreaBounds.height // - bannerAreaHeight();
       cameraDockBounds.maxHeight = mediaAreaBounds.height;
-      cameraDockBounds.top = DEFAULT_VALUES.navBarHeight + bannerAreaHeight();
+      cameraDockBounds.top = 0; // DEFAULT_VALUES.navBarHeight + bannerAreaHeight();
       cameraDockBounds.left = !isRTL ? mediaAreaBounds.left : 0;
       cameraDockBounds.right = isRTL ? sidebarSize : null;
     }
@@ -86,7 +87,6 @@ const LayoutEngine = ({ layoutType }) => {
 
       return cameraDockBounds;
     }
-
     return cameraDockBounds;
   };
 
@@ -118,13 +118,20 @@ const LayoutEngine = ({ layoutType }) => {
   const calculatesActionbarBounds = (mediaAreaBounds) => {
     const actionBarHeight = calculatesActionbarHeight();
 
+    let top =  windowHeight() - actionBarHeight.height;
+
+    if (isMobile) {
+      let mediaAreaBounds= calculatesMediaAreaBounds();
+      top = mediaAreaBounds.height - actionBarHeight.height; // navBarHeight + bannerAreaHeight();
+    }
+
     return {
       display: actionbarInput.hasActionBar,
       width: mediaAreaBounds.width,
       height: actionBarHeight.height,
       innerHeight: actionBarHeight.innerHeight,
       padding: actionBarHeight.padding,
-      top: windowHeight() - actionBarHeight.height,
+      top: top,//windowHeight() - actionBarHeight.height,
       left: !isRTL ? mediaAreaBounds.left : 0,
       zIndex: 1,
     };
@@ -142,10 +149,11 @@ const LayoutEngine = ({ layoutType }) => {
     let width = 0;
     let maxWidth = 0;
     if (isOpen) {
-      if (isMobile) {
-        minWidth = windowWidth();
-        width = windowWidth();
-        maxWidth = windowWidth();
+      if (isMobile || isTabletPortrait ) { //|| isTabletPortrait
+        minWidth = 0;//windowWidth();
+        width = 0;//windowWidth();
+        maxWidth =0;// windowWidth();
+
       } else {
         if (sidebarNavWidth === 0) {
           width = min(max((windowWidth() * 0.2), sidebarNavMinWidth), sidebarNavMaxWidth);
@@ -168,9 +176,11 @@ const LayoutEngine = ({ layoutType }) => {
     const { isOpen } = sidebarNavigationInput;
 
     let sidebarNavHeight = 0;
+
     if (isOpen) {
       if (isMobile) {
-        sidebarNavHeight = windowHeight() - navBarHeight - bannerAreaHeight();
+        let mediaAreaBounds= calculatesMediaAreaBounds();
+        sidebarNavHeight = windowHeight() - mediaAreaBounds.height;//- navBarHeight - bannerAreaHeight();
       } else {
         sidebarNavHeight = windowHeight() - bannerAreaHeight();
       }
@@ -184,7 +194,8 @@ const LayoutEngine = ({ layoutType }) => {
     let top = sidebarNavTop + bannerAreaHeight();
 
     if (isMobile) {
-      top = navBarHeight + bannerAreaHeight();
+      let mediaAreaBounds= calculatesMediaAreaBounds();
+      top = mediaAreaBounds.height;//navBarHeight + bannerAreaHeight();
     }
 
     return {
@@ -214,9 +225,19 @@ const LayoutEngine = ({ layoutType }) => {
         maxWidth = windowWidth();
       } else {
         if (sidebarContentWidth === 0) {
-          width = min(
-            max((windowWidth() * 0.2), sidebarContentMinWidth), sidebarContentMaxWidth,
-          );
+          
+          if(isTabletPortrait){
+            width = min(
+              max((windowWidth() * 0.3), sidebarContentMinWidth), sidebarContentMaxWidth,
+            );
+          }
+          else{
+            width = min(
+              max((windowWidth() * 0.2), sidebarContentMinWidth), sidebarContentMaxWidth,
+            );
+          }
+
+          console.log('[layoutEngine] sidebarContentWidth === 0 width',width);
         } else {
           width = min(max(sidebarContentWidth, sidebarContentMinWidth),
             sidebarContentMaxWidth);
@@ -235,9 +256,12 @@ const LayoutEngine = ({ layoutType }) => {
   const calculatesSidebarContentBounds = (sidebarNavWidth) => {
     const { navBarHeight, sidebarNavTop } = DEFAULT_VALUES;
 
-    let top = sidebarNavTop + bannerAreaHeight();
+    let top =  sidebarNavTop + bannerAreaHeight();
 
-    if (isMobile) top = navBarHeight + bannerAreaHeight();
+    if (isMobile) {
+      let mediaAreaBounds= calculatesMediaAreaBounds();
+      top = mediaAreaBounds.height; // navBarHeight + bannerAreaHeight();
+    }
 
     let left = isMobile ? 0 : sidebarNavWidth;
     let right = isMobile ? 0 : sidebarNavWidth;
@@ -268,8 +292,8 @@ const LayoutEngine = ({ layoutType }) => {
 
     return {
       width,
-      height: windowHeight() - (navBarHeight + actionBarHeight + bannerAreaHeight()),
-      top: navBarHeight + bannerAreaHeight(),
+      height: isMobile  ? windowHeight()*0.4 : windowHeight(), //- (navBarHeight + actionBarHeight + bannerAreaHeight()),
+      top: 0,//navBarHeight + bannerAreaHeight(),
       left,
     };
   };

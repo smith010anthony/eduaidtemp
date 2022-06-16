@@ -30,7 +30,7 @@ import PresentationAreaContainer from '../presentation/presentation-area/contain
 import ScreenshareContainer from '../screenshare/container';
 import ExternalVideoContainer from '../external-video-player/container';
 import Styled from './styles';
-import { DEVICE_TYPE, ACTIONS, SMALL_VIEWPORT_BREAKPOINT } from '../layout/enums';
+import { DEVICE_TYPE, ACTIONS, SMALL_VIEWPORT_BREAKPOINT,PANELS } from '../layout/enums';
 import {
   isMobile, isTablet, isTabletPortrait, isTabletLandscape, isDesktop,
 } from '../layout/utils';
@@ -46,6 +46,7 @@ import { registerTitleView } from '/imports/utils/dom-utils';
 import GlobalStyles from '/imports/ui/stylesheets/styled-components/globalStyles';
 import MediaService from '/imports/ui/components/media/service';
 
+
 const MOBILE_MEDIA = 'only screen and (max-width: 40em)';
 const APP_CONFIG = Meteor.settings.public.app;
 const DESKTOP_FONT_SIZE = APP_CONFIG.desktopFontSize;
@@ -53,6 +54,9 @@ const MOBILE_FONT_SIZE = APP_CONFIG.mobileFontSize;
 const OVERRIDE_LOCALE = APP_CONFIG.defaultSettings.application.overrideLocale;
 const VIEWER = Meteor.settings.public.user.role_viewer;
 const MODERATOR = Meteor.settings.public.user.role_moderator;
+
+const CHAT_CONFIG = Meteor.settings.public.chat;
+const PUBLIC_CHAT_ID = CHAT_CONFIG.public_id;
 
 const intlMessages = defineMessages({
   userListLabel: {
@@ -126,6 +130,7 @@ const defaultProps = {
 };
 
 const isLayeredView = window.matchMedia(`(max-width: ${SMALL_VIEWPORT_BREAKPOINT}px)`);
+const windowHeight = () => window.document.documentElement.clientHeight;
 
 class App extends Component {
   static renderWebcamsContainer() {
@@ -136,6 +141,8 @@ class App extends Component {
     super(props);
     this.state = {
       enableResize: !window.matchMedia(MOBILE_MEDIA).matches,
+      hideActionAndNavBar: false,
+      hideActionAndNavBarTimeOut: null,
     };
 
     this.handleWindowResize = throttle(this.handleWindowResize).bind(this);
@@ -160,6 +167,7 @@ class App extends Component {
       autoSwapLayout,
       shouldShowScreenshare,
       shouldShowExternalVideo,
+      openPollResultModal
     } = this.props;
     const { browserName } = browserInfo;
     const { osName } = deviceInfo;
@@ -230,8 +238,9 @@ class App extends Component {
     if (deviceInfo.isMobile) makeCall('setMobileUser');
 
     ConnectionStatusService.startRoundTripTime();
-
+    this.setState({hideActionAndNavBar: true});
     logger.info({ logCode: 'app_component_componentdidmount' }, 'Client loaded successfully');
+  
   }
 
   componentDidUpdate(prevProps) {
@@ -251,6 +260,7 @@ class App extends Component {
       pushLayoutToEveryone, // is layout pushed
       layoutContextDispatch,
       mountRandomUserModal,
+      openPollResultModal
     } = this.props;
 
     if (meetingLayout !== prevProps.meetingLayout) {
@@ -313,9 +323,10 @@ class App extends Component {
       );
     }
     if (!prevProps.hasPublishedPoll && hasPublishedPoll) {
-      notify(
-        intl.formatMessage(intlMessages.pollPublishedLabel), 'info', 'polling',
-      );
+      // notify(
+      //   intl.formatMessage(intlMessages.pollPublishedLabel), 'info', 'polling',
+      // );
+      openPollResultModal();
     }
     if (prevProps.currentUserRole === VIEWER && currentUserRole === MODERATOR) {
       notify(
@@ -359,7 +370,28 @@ class App extends Component {
         type: ACTIONS.SET_DEVICE_TYPE,
         value: newDeviceType,
       });
+      console.log('[app] @edu25 - setDeviceType - newDeviceType', newDeviceType);
+      if(newDeviceType === DEVICE_TYPE.MOBILE){
+        
+        setTimeout(() => {
+          layoutContextDispatch({
+            type: ACTIONS.SET_SIDEBAR_CONTENT_IS_OPEN,
+            value: true,
+          });
+          layoutContextDispatch({
+            type: ACTIONS.SET_SIDEBAR_CONTENT_PANEL,
+            value: PANELS.CHAT,
+          });
+          layoutContextDispatch({
+            type: ACTIONS.SET_ID_CHAT_OPEN,
+            value: PUBLIC_CHAT_ID,
+          });
+        },100);
+        
+      }
     }
+
+    
   }
 
   shouldAriaHide() {
@@ -367,6 +399,18 @@ class App extends Component {
     return sidebarNavigationIsOpen
       && sidebarContentIsOpen
       && (isPhone || isLayeredView.matches);
+  }
+
+  handleHideActionAndNavBar =()=>{
+    const {hideActionAndNavBarTimeOut} = this.state;
+    if(hideActionAndNavBarTimeOut){
+      clearTimeout(hideActionAndNavBarTimeOut);
+    }
+    let newHideActionAndNavBarTimeOut=setTimeout(()=>{
+      this.setState({hideActionAndNavBar: true});
+    },5000);
+    this.setState({hideActionAndNavBar: false,hideActionAndNavBarTimeOut:newHideActionAndNavBarTimeOut});
+    
   }
 
   renderCaptions() {
@@ -460,9 +504,12 @@ class App extends Component {
       shouldShowScreenshare,
       shouldShowExternalVideo,
       isPresenter,
+      currentUserRole,
       layoutType,
+      deviceType
     } = this.props;
-
+    const {hideActionAndNavBar} = this.state;
+    let mainappwrapperHeight= deviceType===DEVICE_TYPE.MOBILE ? windowHeight()*1.00 : windowHeight() // 0.99
     return (
       <>
         <LayoutEngine layoutType={layoutType} />
@@ -473,14 +520,19 @@ class App extends Component {
             width: '100%',
             height: '100%',
           }}
+          onClick={this.handleHideActionAndNavBar}
         >
+        <Styled.mainappwrapper  className="mainappwrapper" style={{
+          height: mainappwrapperHeight,
+          maxHeight: mainappwrapperHeight
+        }}>
           {this.renderActivityCheck()}
           {this.renderUserInformation()}
           <BannerBarContainer />
           <NotificationsBarContainer />
-          <SidebarNavigationContainer />
-          <SidebarContentContainer />
-          <NavBarContainer main="new" />
+          {/* <SidebarNavigationContainer />
+          <SidebarContentContainer /> */}
+          {hideActionAndNavBar===true ? null : <NavBarContainer main="new" />}
           {this.renderWebcamsContainer()}
           {shouldShowPresentation ? <PresentationAreaContainer /> : null}
           {shouldShowScreenshare ? <ScreenshareContainer /> : null}
@@ -509,7 +561,10 @@ class App extends Component {
           <PollingContainer />
           <ModalContainer />
           <PadsSessionsContainer />
-          {this.renderActionsBar()}
+          {hideActionAndNavBar===true ? null : this.renderActionsBar()}
+        </Styled.mainappwrapper>
+          { currentUserRole === VIEWER ? null : <SidebarNavigationContainer /> }
+          <SidebarContentContainer />
           {customStyleUrl ? <link rel="stylesheet" type="text/css" href={customStyleUrl} /> : null}
           {customStyle ? <link rel="stylesheet" type="text/css" href={`data:text/css;charset=UTF-8,${encodeURIComponent(customStyle)}`} /> : null}
         </Styled.Layout>

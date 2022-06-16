@@ -1,11 +1,14 @@
 import { DEVICE_TYPE, LAYOUT_TYPE } from './enums';
 
 const phoneUpperBoundary = 600;
+const phoneLandscapeUpperBoundary = 800;
 const tabletPortraitUpperBoundary = 900;
 const tabletLandscapeUpperBoundary = 1200;
 
 const windowSize = () => window.document.documentElement.clientWidth;
+const windowHeight = () => window.document.documentElement.clientHeight;
 const isMobile = () => windowSize() <= (phoneUpperBoundary - 1);
+const isMobileLandScape = () => windowSize() <= phoneLandscapeUpperBoundary && windowSize() >= windowHeight()*1.5;
 const isTabletPortrait = () => windowSize() >= phoneUpperBoundary
   && windowSize() <= (tabletPortraitUpperBoundary - 1);
 const isTabletLandscape = () => windowSize() >= tabletPortraitUpperBoundary

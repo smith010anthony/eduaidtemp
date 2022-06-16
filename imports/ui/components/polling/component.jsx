@@ -52,7 +52,9 @@ class Polling extends Component {
     this.state = {
       typedAns: '',
       checkedAnswers: [],
+      imageFullscreen: false,
     };
+    
 
     this.play = this.play.bind(this);
     this.handleUpdateResponseInput = this.handleUpdateResponseInput.bind(this);
@@ -287,11 +289,14 @@ class Polling extends Component {
     const {
       intl,
       poll,
+      pdPoll
     } = this.props;
 
     if (!poll) return null;
 
     const { stackOptions, question } = poll;
+
+    const {imageFullscreen} = this.state;
 
     return (
       <Styled.Overlay>
@@ -300,6 +305,40 @@ class Polling extends Component {
           data-test="pollingContainer"
           role="alert"
         >
+          {
+            pdPoll && pdPoll.imagePath ? (
+              <Styled.ImageWrapper 
+                ref={(node) => {
+                  this.imageWrapper = node;
+                }}
+              >
+                {
+                  imageFullscreen ? (
+                    <Button
+                      label="Close"
+                      onClick={() => {
+                        document.exitFullscreen().then(
+                          () => this.setState({ imageFullscreen: false }),
+                        );
+                      }}
+                      className={styles.closeBtn}
+                      icon="close"
+                      size="sm"
+                      hideLabel
+                    />
+                  ) : ''
+                }
+                <img
+                  style={{ minWidth: '10rem' }}
+                  src={`${pdPoll.imagePath}`}
+                  alt="EduAid"
+                  onClick={
+                    () => this.imageWrapper.requestFullscreen().then(
+                      () => this.setState({ imageFullscreen: true }),
+                    )}
+                />
+              </Styled.ImageWrapper>) : ''
+          }
           {
             question.length > 0 && (
               <Styled.QHeader>

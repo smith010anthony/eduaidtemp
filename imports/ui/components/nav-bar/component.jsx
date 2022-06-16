@@ -15,6 +15,9 @@ import _ from "lodash";
 import { politeSRAlert } from '/imports/utils/dom-utils';
 import { PANELS, ACTIONS } from '../layout/enums';
 
+const CHAT_CONFIG = Meteor.settings.public.chat;
+const PUBLIC_CHAT_ID = CHAT_CONFIG.public_id;
+
 const intlMessages = defineMessages({
   toggleUserListLabel: {
     id: 'app.navBar.userListToggleBtnLabel',
@@ -62,6 +65,8 @@ class NavBar extends Component {
     }
 
     this.handleToggleUserList = this.handleToggleUserList.bind(this);
+    this.handleToggleChat = this.handleToggleChat.bind(this);
+
   }
 
   componentDidMount() {
@@ -113,6 +118,51 @@ class NavBar extends Component {
     clearInterval(this.interval);
   }
 
+  handleToggleChat() {
+    const {
+      sidebarNavigation,
+      sidebarContent,
+      layoutContextDispatch,
+    } = this.props;
+    if (sidebarContent.isOpen) {
+      layoutContextDispatch({
+        type: ACTIONS.SET_SIDEBAR_CONTENT_IS_OPEN,
+        value: false,
+      });
+      layoutContextDispatch({
+        type: ACTIONS.SET_SIDEBAR_CONTENT_PANEL,
+        value: PANELS.NONE,
+      });
+      layoutContextDispatch({
+        type: ACTIONS.SET_ID_CHAT_OPEN,
+        value: '',
+      });
+    }
+    else{
+      layoutContextDispatch({
+        type: ACTIONS.SET_SIDEBAR_CONTENT_IS_OPEN,
+        value: true,
+      });
+      layoutContextDispatch({
+        type: ACTIONS.SET_SIDEBAR_CONTENT_PANEL,
+        value: PANELS.CHAT,
+      });
+      layoutContextDispatch({
+        type: ACTIONS.SET_ID_CHAT_OPEN,
+        value: PUBLIC_CHAT_ID,
+      });
+      layoutContextDispatch({
+        type: ACTIONS.SET_SIDEBAR_NAVIGATION_IS_OPEN,
+        value: false,
+      });
+      layoutContextDispatch({
+        type: ACTIONS.SET_SIDEBAR_NAVIGATION_PANEL,
+        value: PANELS.NONE,
+      });
+    }
+
+  }
+
   handleToggleUserList() {
     const {
       sidebarNavigation,
@@ -145,6 +195,7 @@ class NavBar extends Component {
         value: PANELS.NONE,
       });
     } else {
+      console.log('[nav-bar] @edu25 1111111')
       layoutContextDispatch({
         type: ACTIONS.SET_SIDEBAR_NAVIGATION_IS_OPEN,
         value: true,
@@ -169,6 +220,7 @@ class NavBar extends Component {
       style,
       main,
       sidebarNavigation,
+      amIPresenter
     } = this.props;
 
     const hasNotification = hasUnreadMessages || hasUnreadNotes;
@@ -196,38 +248,43 @@ class NavBar extends Component {
               left: style.left,
               height: style.height,
               width: style.width,
+              zIndex:3,
             }
             : {
               position: 'relative',
               height: style.height,
               width: '100%',
+              zIndex:3,
             }
         }
       >
         <Styled.Top>
           <Styled.Left>
-            {isExpanded && document.dir === 'ltr'
+            {/* {isExpanded && document.dir === 'ltr'
               && <Styled.ArrowLeft iconName="left_arrow" />}
             {!isExpanded && document.dir === 'rtl'
-              && <Styled.ArrowLeft iconName="left_arrow" />}
+              && <Styled.ArrowLeft iconName="left_arrow" />} */}
+            { amIModerator || amIPresenter ?
             <Styled.NavbarToggleButton
-              onClick={this.handleToggleUserList}
+              //onClick={this.handleToggleUserList}
+              onClick = {amIModerator ? this.handleToggleUserList : this.handleToggleChat}
               ghost
-              circle
+              //circle
               hideLabel
               data-test={hasNotification ? 'hasUnreadMessages' : 'toggleUserList'}
               label={intl.formatMessage(intlMessages.toggleUserListLabel)}
               tooltipLabel={intl.formatMessage(intlMessages.toggleUserListLabel)}
               aria-label={ariaLabel}
-              icon="user"
+              icon={amIModerator ? "user" : "chat"}
               aria-expanded={isExpanded}
               accessKey={TOGGLE_USERLIST_AK}
               hasNotification={hasNotification}
             />
-            {!isExpanded && document.dir === 'ltr'
+            : null }
+            {/* {!isExpanded && document.dir === 'ltr'
               && <Styled.ArrowRight iconName="right_arrow" />}
             {isExpanded && document.dir === 'rtl'
-              && <Styled.ArrowRight iconName="right_arrow" />}
+              && <Styled.ArrowRight iconName="right_arrow" />} */}
           </Styled.Left>
           <Styled.Center>
             <Styled.PresentationTitle data-test="presentationTitle">

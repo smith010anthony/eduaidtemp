@@ -2,6 +2,8 @@ import Auth from '/imports/ui/services/auth';
 import { CurrentPoll } from '/imports/api/polls';
 import caseInsensitiveReducer from '/imports/utils/caseInsensitiveReducer';
 import { defineMessages } from 'react-intl';
+import PredefinedPolls from '../../../api/predefined-polls';
+import Users from '/imports/api/users';
 
 const POLL_AVATAR_COLOR = '#3B48A9';
 const MAX_POLL_RESULT_BARS = 20;
@@ -212,6 +214,8 @@ const checkPollType = (
 
 export default {
   pollTypes,
+  amIPresenter: () => Users.findOne({ userId: Auth.userID },
+    { fields: { presenter: 1 } }).presenter,
   currentPoll: () => CurrentPoll.findOne({ meetingId: Auth.meetingID }),
   pollAnswerIds,
   POLL_AVATAR_COLOR,
@@ -221,4 +225,16 @@ export default {
   matchYesNoAbstentionPoll,
   matchTrueFalsePoll,
   checkPollType,
+  predefinedPolls: () => PredefinedPolls.find({
+    meetingId: Auth.meetingID,
+    published: false,
+  }).fetch(),
+  publishPoll: (id) => {
+    console.log('[live-result] publishPoll', id);
+    makeCall('publishPoll');
+    if (id) {
+      makeCall('removePublishedPoll', Auth.meetingID, id);
+    }
+  },
+
 };

@@ -3,6 +3,7 @@ import meetingHasEnded from '../modifiers/meetingHasEnded';
 import Meetings from '/imports/api/meetings';
 import Breakouts from '/imports/api/breakouts';
 import Logger from '/imports/startup/server/logger';
+import KnexConnection from '/imports/startup/server/knexConnection';
 
 export default function handleMeetingEnd({ header, body }) {
   check(body, Object);
@@ -35,6 +36,19 @@ export default function handleMeetingEnd({ header, body }) {
       },
       (err, num) => { cb(err, num, 'Meeting'); });
   });
+  const meeting = Meetings.findOne({ meetingId }, { fields: { meetingProp: 1 } });
+  const query = KnexConnection('video_conference_records')
+    .where({ meetingid: meeting.meetingProp.extId })
+    .update({ status: 'ended' });
+
+  query.then(() => {
+    Logger.info(`Success marking meeting ending in eduaid postgres: ${meetingId}`);
+  });
+
+  query.catch((reason) => {
+    Logger.error(`Error marking meeting ending in eduaid postgres: ${meetingId} - ${reason}`);
+  });
+
 
   Breakouts.update({ parentMeetingId: meetingId },
     { $set: { meetingEnded: true } },

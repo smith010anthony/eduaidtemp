@@ -87,6 +87,7 @@ const TypedResponseInput = styled.input`
 
 const SubmitVoteButton = styled(Button)`
   font-size: ${fontSizeBase};
+  z-index: 3
 `;
 
 const PollingSecret = styled.div`
@@ -158,8 +159,14 @@ const PollingContainer = styled.div`
   font-weight: 600;
   padding: ${mdPaddingY};
   background-color: ${colorWhite};
-  bottom: ${pollBottomOffset};
-  right: ${jumboPaddingX};
+  // bottom: ${pollBottomOffset};
+  // right: ${jumboPaddingX};
+
+  bottom: auto;
+  right: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
   [dir="rtl"] & {
     left: ${jumboPaddingX};
@@ -183,6 +190,23 @@ const PollingContainer = styled.div`
   ${({ autoWidth }) => autoWidth && `
     width: auto;
   `}
+`;
+
+const ImageWrapper = styled.div`
+  display: flex;
+  flex-basis: 40%;
+  flex-grow: 0;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f3f3;
+  border-radius: 2px;
+  .closeBtn {
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    padding: 0.35rem;
+  }
 `;
 
 const PollingAnswers = styled.div`
@@ -232,4 +256,5 @@ export default {
   QText,
   PollingContainer,
   PollingAnswers,
+  ImageWrapper
 };

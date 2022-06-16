@@ -91,7 +91,39 @@ const VideoListItem = (props) => {
     onVideoItemUnmount(cameraId);
   }, []);
 
+  // customIcon
   return (
+
+    // const pinned = user?.pin;
+    // const userId = user?.userId;
+    // const isPinnedIntlKey = !pinned ? 'pin' : 'unpin';
+    // const isFocusedIntlKey = !focused ? 'focus' : 'unfocus';
+
+    // const menuItems = [{
+    //   key: `${cameraId}-mirror`,
+    //   label: intl.formatMessage(intlMessages.mirrorLabel),
+    //   description: intl.formatMessage(intlMessages.mirrorDesc),
+    //   onClick: () => onHandleMirror(),
+    // }];
+
+    // if (numOfStreams > 2) {
+    //   menuItems.push({
+    //     key: `${cameraId}-focus`,
+    //     label: intl.formatMessage(intlMessages[`${isFocusedIntlKey}Label`]),
+    //     description: intl.formatMessage(intlMessages[`${isFocusedIntlKey}Desc`]),
+    //     onClick: () => onHandleVideoFocus(cameraId),
+    //   });
+    // }
+
+    // if (VideoService.isVideoPinEnabledForCurrentUser()) {
+    //   menuItems.push({
+    //     key: `${cameraId}-pin`,
+    //     label: intl.formatMessage(intlMessages[`${isPinnedIntlKey}Label`]),
+    //     description: intl.formatMessage(intlMessages[`${isPinnedIntlKey}Desc`]),
+    //     onClick: () => VideoService.toggleVideoPin(userId, pinned),
+    //   });
+    // }
+
     <Styled.Content
       ref={videoContainer}
       talking={talking}
@@ -107,15 +139,24 @@ const VideoListItem = (props) => {
                   <PinArea
                     user={user}
                   />
-                  <ViewActions
+                  { isFullscreenContext ? <ViewActions
                     videoContainer={videoContainer}
                     name={name}
                     cameraId={cameraId}
                     isFullscreenContext={isFullscreenContext}
                     layoutContextDispatch={layoutContextDispatch}
-                  />
+                    btncolor={'blue'}
+                  /> : null}
                 </Styled.TopBar>
-                <Styled.BottomBar>
+                <Styled.CenterBar className='videoCenterBar'>
+                  
+                {/* { isFullscreenContext ? <ViewActions
+                    videoContainer={videoContainer}
+                    name={name}
+                    cameraId={cameraId}
+                    isFullscreenContext={isFullscreenContext}
+                    layoutContextDispatch={layoutContextDispatch}
+                  /> : null} */}
                   <UserActions
                     name={name}
                     user={user}
@@ -124,7 +165,22 @@ const VideoListItem = (props) => {
                     onHandleVideoFocus={onHandleVideoFocus}
                     focused={focused}
                     onHandleMirror={() => setIsMirrored((value) => !value)}
+                    videoContainer={videoContainer}
+                    isFullscreenContext={isFullscreenContext}
+                    layoutContextDispatch={layoutContextDispatch}
                   />
+
+                </Styled.CenterBar>
+                <Styled.BottomBar>
+                  {/* <UserActions
+                    name={name}
+                    user={user}
+                    cameraId={cameraId}
+                    numOfStreams={numOfStreams}
+                    onHandleVideoFocus={onHandleVideoFocus}
+                    focused={focused}
+                    onHandleMirror={() => setIsMirrored((value) => !value)}
+                  /> */}
                   <UserStatus
                     voiceUser={voiceUser}
                   />

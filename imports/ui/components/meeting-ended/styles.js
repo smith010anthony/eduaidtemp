@@ -30,11 +30,12 @@ const Parent = styled.div`
 const Modal = styled.div`
   display: flex;
   padding: ${lgPaddingX};
-  background-color: ${colorWhite};
+  background-color: #b5b5b5;//${colorWhite};
   flex-direction: column;
   border-radius: ${borderRadius};
   max-width: 95vw;
-  width: 600px;
+  min-width: 200px;
+  //width: 600px;
 `;
 
 const Content = styled.div`
@@ -58,6 +59,7 @@ const Text = styled.div`
 `;
 
 const MeetingEndedButton = styled(Button)`
+  border-radius: 4px;
   @media ${smallOnly} {
     font-size: ${fontSizeBase};
   }

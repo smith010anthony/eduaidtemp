@@ -277,13 +277,13 @@ class TimeWindowChatItem extends PureComponent {
     } = this.props;
     ChatLogger.debug('TimeWindowChatItem::render', {...this.props});
     if (systemMessage) {
-      return this.renderSystemMessage();
+      return null; //this.renderSystemMessage();
     }
 
     return (
-      <Styled.Item>
+      <Styled.ItemUpper>
         {this.renderMessageItem()}
-      </Styled.Item>
+      </Styled.ItemUpper>
     );
   }
 }

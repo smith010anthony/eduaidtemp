@@ -11,6 +11,7 @@ import Styled from './styles';
 import { PANELS, ACTIONS } from '../layout/enums';
 import DragAndDrop from './dragAndDrop/component';
 import { alertScreenReader } from '/imports/utils/dom-utils';
+import Select from 'react-select';
 
 const intlMessages = defineMessages({
   pollPaneTitle: {
@@ -215,6 +216,13 @@ class Poll extends Component {
       error: null,
       isMultipleResponse: false,
       secretPoll: false,
+      selectedQuestion: '',
+      customPollReq: false,
+      customPollValues: [],
+      questionImage: null,
+      activePollType: null,
+      selectedPoll: { question: '', options: [] },
+      requestSent: false,
     };
 
     this.handleBackClick = this.handleBackClick.bind(this);
@@ -224,19 +232,28 @@ class Poll extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.toggleIsMultipleResponse = this.toggleIsMultipleResponse.bind(this);
     this.displayToggleStatus = this.displayToggleStatus.bind(this);
+    this.predefinedQuestionSelectHandler = this.predefinedQuestionSelectHandler.bind(this);
+    this.toggleCustomFields = this.toggleCustomFields.bind(this);
+    this.renderQuickPollTypes = this.renderQuickPollTypes.bind(this);
+    this.renderOptionInputs = this.renderOptionInputs.bind(this);
+    // this.handleQuestionChange = this.handleQuestionChange.bind(this);
+    this.onQuestionImageSelect = this.onQuestionImageSelect.bind(this);
+    this.inputEditor = [];
   }
 
   componentDidMount() {
+
     const { props } = this.hideBtn;
-    const { className } = props;
+    const { className,publishedPollResult } = props;
+    // console.log('========================== publishedPollResult ',publishedPollResult)
 
     const hideBtn = document.getElementsByClassName(`${className}`);
     if (hideBtn[0]) hideBtn[0].focus();
   }
 
   componentDidUpdate() {
-    const { amIPresenter, layoutContextDispatch, sidebarContentPanel } = this.props;
-
+    const { amIPresenter, layoutContextDispatch, sidebarContentPanel,publishedPollResult } = this.props;
+    // console.log('========================== publishedPollResult ',publishedPollResult)
     if (Session.equals('resetPollPanel', true)) {
       this.handleBackClick();
     }
@@ -257,7 +274,52 @@ class Poll extends Component {
     Session.set('secretPoll', false);
   }
 
+  onQuestionImageSelect(evt) {
+    const file = evt.target.files[0];
+    if (!file) {
+      this.setState({
+        questionImage: null,
+      });
+    } else if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.setState({
+          questionImage: e.target.result,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+  handleQuestionChange(e) {
+    // const question = e.target.value.replace(/\s{2,}/g, ' ').trim();
+    const question = e.target.value;
+    this.setState({
+      question,
+    });
+  }
+
+  // handleBackClick() {
+  //   const { stopPoll } = this.props;
+  //   this.setState({
+  //     isPolling: false,
+  //     error: null,
+  //     selectedPoll: { question: '', options: [] },
+  //     question: '',
+  //     selectedQuestion: null,
+  //     questionImage: null,
+  //     imagePath: null,
+  //     activePollType: null,
+  //     customPollValues: this.inputEditor,
+  //     requestSent: false,
+  //   }, () => {
+  //     stopPoll();
+  //     Session.set('resetPollPanel', false);
+  //     document.activeElement.blur();
+  //   });
+  // }
+
   handleBackClick() {
+    console.log('[poll] handleBackClick')
     const { stopPoll } = this.props;
     this.setState({
       isPolling: false,
@@ -267,6 +329,11 @@ class Poll extends Component {
       Session.set('resetPollPanel', false);
       document.activeElement.blur();
     });
+  }
+  
+  toggleCustomFields() {
+    const { customPollReq } = this.state;
+    return this.setState({ customPollReq: !customPollReq });
   }
 
   handleInputTextChange(index, text) {
@@ -297,6 +364,230 @@ class Poll extends Component {
         input.selectionStart = caretStart - charsRemovedCount;
         input.selectionEnd = caretEnd - charsRemovedCount;
       });
+  }
+
+  predefinedQuestionSelectHandler(selectedOption) {
+    const { intl,predefinedPolls,pollTypes } = this.props;
+    // console.log('[poll] @edu20 pollTypes',pollTypes);
+    //let reversePollTypes= Object.fromEntries(Object.entries(pollTypes).map(([k, v]) => [v, k]))
+    if (!selectedOption) {
+      this.setState({
+        selectedPoll: { question: '', options: [] },
+        customPollValues: [],
+        question: '',
+        questionImage: null,
+        selectedQuestion: null,
+        imagePath: null,
+        activePollType: null,
+      });
+      this.inputEditor = [];
+      return;
+    }
+    const poll = predefinedPolls[+selectedOption.value];
+    console.log('[poll] @edu201 poll',poll);
+    const activePollType = poll.type;
+    let options = [];
+    if (activePollType && activePollType.match(/A-\d$/)) {
+      options = poll.options.split(',');
+    }
+    this.inputEditor = options;
+    
+    console.log('[poll] @edu201 this.inputEditor',this.inputEditor);
+    let optList=[];
+    // switch (activePollType) {
+    //   case pollTypes.TrueFalse:
+    //     optList= [
+    //         { val: intl.formatMessage(intlMessages.true) },
+    //         { val: intl.formatMessage(intlMessages.false) },
+    //       ]
+    //     break;
+    //   case pollTypes.Letter:
+    //     optList=[
+    //       { val: intl.formatMessage(intlMessages.a) },
+    //       { val: intl.formatMessage(intlMessages.b) },
+    //       { val: intl.formatMessage(intlMessages.c) },
+    //       { val: intl.formatMessage(intlMessages.d) },
+    //     ]
+    //     break;
+    //   case pollTypes.YesNoAbstention:
+    //     optList= [
+    //       { val: intl.formatMessage(intlMessages.yes) },
+    //       { val: intl.formatMessage(intlMessages.no) },
+    //       { val: intl.formatMessage(intlMessages.abstention) },
+    //     ]
+    //     break;
+    //   case pollTypes.Response:
+    //     optList= []
+    //     break;
+    //   default:
+    //     optList= []
+    //     break;
+    // }
+    switch (activePollType) {
+      case pollTypes.TrueFalse:
+        optList= [
+            { val: options[0]? options[0] : intl.formatMessage(intlMessages.true) },
+            { val: options[1]? options[1] : intl.formatMessage(intlMessages.false) },
+          ]
+        break;
+      case pollTypes.Letter:
+        optList=[
+          { val: options[0]? options[0] : intl.formatMessage(intlMessages.a) },
+          { val: options[1]? options[1] : intl.formatMessage(intlMessages.b) },
+          { val: options[2]? options[2] : intl.formatMessage(intlMessages.c) },
+          { val: options[3]? options[3] : intl.formatMessage(intlMessages.d) },
+        ]
+        break;
+      case pollTypes.YesNoAbstention:
+        optList= [
+          { val: options[0]? options[0] : intl.formatMessage(intlMessages.yes) },
+          { val: options[1]? options[1] : intl.formatMessage(intlMessages.no) },
+          { val: options[2]? options[2] : intl.formatMessage(intlMessages.abstention) },
+        ]
+        break;
+      case pollTypes.YesNo:
+      case pollTypes.A2:
+      case pollTypes.A3:
+      case pollTypes.A4:
+      case pollTypes.A5:
+        optList= options.map((op)=>{
+          return {val:op}
+        })
+        break;
+      case pollTypes.Response:
+        optList= []
+        break;
+      default:
+        optList= []
+        break;
+    }
+
+    this.setState({
+      selectedPoll: poll,
+      question: poll.question,
+      selectedQuestion: selectedOption,
+      imagePath: poll.imagePath,
+      activePollType,
+      type:activePollType,
+      customPollValues: options,
+      optList
+    });
+  }
+
+  hasPollModified() {
+    const {
+      question, activePollType, selectedPoll, customPollValues, questionImage,
+    } = this.state;
+    const {
+      question: sQuestion, type, options, questionImage: sImage,
+    } = selectedPoll;
+    const newOptions = customPollValues.join();
+    const hasQuestionChanged = isValid(question) && isValid(sQuestion) && question !== sQuestion;
+    const hasTypeChanged = isValid(activePollType) && isValid(type) && activePollType !== type;
+    const hasOptionChanged = isValid(newOptions) && isValid(options) && newOptions !== options;
+    const hasImageChanged = isValid(sImage) && isValid(questionImage) && sImage !== questionImage;
+    return hasQuestionChanged || hasTypeChanged || hasOptionChanged || hasImageChanged;
+  }
+
+  updatePredefinedPoll() {
+    return new Promise((resolve, reject) => {
+      const {
+        question, activePollType, selectedPoll, customPollValues, questionImage: sQuestionImage,
+      } = this.state;
+      const { updatePredefinedPoll, addPredefinedPoll } = this.props;
+      const {
+        _id, meetingId, id, imagePath,
+      } = selectedPoll;
+      const newOptions = customPollValues.join();
+      if (id === undefined) {
+        addPredefinedPoll({
+          question,
+          questionImage: sQuestionImage,
+          type: activePollType,
+          options: newOptions === '' ? null : newOptions,
+        }).then(filename => resolve(filename)).catch(err => reject(err));
+      } else if (this.hasPollModified()) {
+        updatePredefinedPoll({
+          _id,
+          meetingId,
+          id,
+          question,
+          imagePath,
+          questionImage: sQuestionImage,
+          type: activePollType,
+          options: newOptions === '' ? null : newOptions,
+        }).then(filename => resolve(filename)).catch(err => reject(err));
+      } else {
+        resolve(id);
+      }
+    });
+  }
+
+  renderQuickPollTypes() {
+    const { isMeteorConnected, pollTypes, intl } = this.props;
+    const { activePollType } = this.state;
+
+    return pollTypes.map((type) => {
+      // regex removes the - to match the message id
+      const label = intl.formatMessage(intlMessages[type.replace(/-/g, '').toLowerCase()]);
+
+      // noinspection JSUnresolvedVariable
+      return (
+        <Button
+          disabled={!isMeteorConnected}
+          label={label}
+          color="default"
+          className={cx({
+            [pollnewBtn]: true,
+            [active]: activePollType === type,
+          })}
+          key={_.uniqueId('quick-poll-')}
+          onClick={() => {
+            if (type.match(/A-\d$/)) {
+              this.toggleCustomFields();
+            }
+            this.setState({ activePollType: type });
+            // if (selectedPoll.question === '') {
+            // }
+          }}
+        />);
+    });
+  }
+
+  renderOptionInputs() {
+    const { intl } = this.props;
+    const { customPollValues, activePollType } = this.state;
+    const options = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+    const totalQuestions = +activePollType.split('-')[1];
+    const items = options.slice(0, totalQuestions);
+
+    // noinspection JSUnresolvedVariable
+    return (
+      <div className={styles.customInputWrapper}>
+        <div className={styles.instructions}>
+          Options :
+        </div>
+        {
+          items.map((option, index) => (
+            <div key={`custom-poll-option-${option}`} className={styles.pollInput}>
+              <input
+                aria-label={intl.formatMessage(
+                  intlMessages.ariaInputCount, {
+                    0: index + 1,
+                    1: MAX_CUSTOM_FIELDS,
+                  },
+                )}
+                placeholder={`Enter Option ${option}`}
+                className={styles.input}
+                onChange={event => this.handleInputChange(index, event)}
+                defaultValue={customPollValues[index]}
+                maxLength={MAX_INPUT_CHARS}
+              />
+            </div>
+          ))
+        }
+      </div>
+    );
   }
 
   toggleIsMultipleResponse() {
@@ -451,8 +742,11 @@ class Poll extends Component {
       pollAnswerIds,
       usernames,
       isDefaultPoll,
+      
     } = this.props;
 
+    const { selectedPoll,questionImage,imageUrl } = this.state;
+    console.log('[Poll] @edu20 renderActivePollOptions currentPoll',currentPoll)
     return (
       <div>
         <Styled.Instructions>
@@ -466,6 +760,8 @@ class Poll extends Component {
             pollAnswerIds,
             usernames,
             isDefaultPoll,
+            predefinedPollId: selectedPoll ? selectedPoll.id : null,
+            image: questionImage || imageUrl,
           }}
           handleBackClick={this.handleBackClick}
         />
@@ -475,7 +771,8 @@ class Poll extends Component {
 
   renderPollOptions() {
     const {
-      type, secretPoll, optList, question, error, isMultipleResponse
+      type, secretPoll, optList, question, error, isMultipleResponse,
+      activePollType, selectedQuestion, selectedPoll, questionImage, imagePath, requestSent,
     } = this.state;
     const {
       startPoll,
@@ -484,7 +781,8 @@ class Poll extends Component {
       pollTypes,
       isDefaultPoll,
       checkPollType,
-      smallSidebar,
+      smallSidebar, 
+      predefinedPolls,
     } = this.props;
     const defaultPoll = isDefaultPoll(type);
     const questionPlaceholder = (type === pollTypes.Response)
@@ -494,6 +792,19 @@ class Poll extends Component {
     return (
       <div>
         <div>
+          {
+            predefinedPolls.length > 0 && (
+              <Select
+                className='selectQuestion'
+                value={selectedQuestion}
+                onChange={this.predefinedQuestionSelectHandler}
+                options={predefinedPolls
+                  .map((poll, index) => ({ value: index, label: poll.question }))}
+                isClearable
+                placeholder="Select Question..."
+              />
+            )
+          }
           <Styled.PollQuestionArea
             hasError={hasQuestionError}
             data-test="pollQuestionArea"
@@ -510,6 +821,14 @@ class Poll extends Component {
           ) : (
             <Styled.ErrorSpacer>&nbsp;</Styled.ErrorSpacer>
           )}
+
+          <Styled.Instructions>
+            Poll Image :
+          </Styled.Instructions>
+          {
+            (questionImage || imagePath) ? <img src={questionImage || imagePath} alt="Poll Question" style={{ width: '60%' }} /> : ''
+          }
+          <Styled.FileInput type="file" onChange={this.onQuestionImageSelect} ></Styled.FileInput>
         </div>
         <div data-test="responseTypes">
           <Styled.SectionHeading>
@@ -665,6 +984,7 @@ class Poll extends Component {
                       label={intl.formatMessage(intlMessages.startPollLabel)}
                       color="primary"
                       onClick={() => {
+                        console.log('[poll] @edu20 startPoll optList',optList);
                         let hasVal = false;
                         optList.forEach((o) => {
                           if (o.val.length > 0) hasVal = true;
@@ -693,7 +1013,11 @@ class Poll extends Component {
                             if (o.val.length > 0) return o.val;
                             return null;
                           });
-                          if (verifiedPollType === pollTypes.Custom) {
+                          console.log('[Poll] startPoll verifiedPollType, question,verifiedOptions', verifiedPollType, question,verifiedOptions,_.compact(verifiedOptions));
+                          if(verifiedPollType === pollTypes.Response) {
+                            startPoll(verifiedPollType, secretPoll, question, isMultipleResponse);
+                          }
+                          else if (verifiedPollType === pollTypes.Custom) {
                             startCustomPoll(
                               verifiedPollType,
                               secretPoll,
@@ -702,7 +1026,15 @@ class Poll extends Component {
                               _.compact(verifiedOptions),
                             );
                           } else {
-                            startPoll(verifiedPollType, secretPoll, question, isMultipleResponse);
+                            startCustomPoll(
+                              //verifiedPollType,
+                              pollTypes.Custom,
+                              secretPoll,
+                              question,
+                              isMultipleResponse,
+                              _.compact(verifiedOptions),
+                            );
+                            // startPoll(verifiedPollType, secretPoll, question, isMultipleResponse);
                           }
                         });
                       }}
@@ -776,7 +1108,11 @@ class Poll extends Component {
       stopPoll,
       currentPoll,
       layoutContextDispatch,
+      selectedQuestion,
+      predefinedPolls
     } = this.props;
+
+    // console.log('[poll] @edu20 render predefinedPolls',predefinedPolls)
 
     return (
       <div>
@@ -821,6 +1157,21 @@ class Poll extends Component {
             data-test="closePolling"
           />
         </Styled.Header>
+        {/* <select */}
+        {/* // className={styles.selectQuestion} */}
+        {/* <Styled.selectQuestion
+          
+          value={selectedQuestion}
+          onChange={this.predefinedQuestionSelectHandler}
+        >
+          <option value="">Select a Question</option>
+          { predefinedPolls &&  
+          predefinedPolls
+            .map(poll => <option value={poll} key={poll.id}>{poll.question}</option>)
+          }
+        </Styled.selectQuestion> */}
+        {/* </select> */}
+
         {this.renderPollPanel()}
         <span className="sr-only" id="poll-config-button">{intl.formatMessage(intlMessages.showRespDesc)}</span>
         <span className="sr-only" id="add-item-button">{intl.formatMessage(intlMessages.addRespDesc)}</span>

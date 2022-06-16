@@ -241,7 +241,8 @@ const CustomLayout = (props) => {
         cameraDockHeight = min(
           max((mediaAreaBounds.height * 0.2), cameraDockMinHeight),
           (mediaAreaBounds.height - cameraDockMinHeight),
-        );
+          );
+        console.log('[customLayout] @edu14 @calculatesCameraDockBounds mediaAreaBounds,cameraDockMinHeight',mediaAreaBounds,cameraDockMinHeight)
       } else {
         cameraDockHeight = min(
           max(cameraDockInput.height, cameraDockMinHeight),
@@ -333,7 +334,7 @@ const CustomLayout = (props) => {
   const calculatesMediaBounds = (sidebarNavWidth, sidebarContentWidth, cameraDockBounds) => {
     const { isOpen } = presentationInput;
     const { height: actionBarHeight } = calculatesActionbarHeight();
-    const mediaAreaHeight = windowHeight()
+    const mediaAreaHeight =isMobile ? windowHeight()*0.99 : windowHeight()
       - (DEFAULT_VALUES.navBarHeight + actionBarHeight + bannerAreaHeight());
     const mediaAreaWidth = windowWidth() - (sidebarNavWidth + sidebarContentWidth);
     const mediaBounds = {};

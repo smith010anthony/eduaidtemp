@@ -41,8 +41,10 @@ export default function addPoll(meetingId, requesterId, poll, pollType, secretPo
     { question, pollType, secretPoll },
     flat(poll, { safe: true }),
   );
-
-
+  Logger.info('[api/poll] addPoll *************************************');
+  Logger.info('[api/poll] addPoll *************************************');
+  Logger.info('[api/poll] addPoll *************************************');
+  Logger.info('[api/poll] addPoll:: modifier= ' + JSON.stringify(modifier));
   try {
     const { insertedId } = Polls.upsert(selector, modifier);
 

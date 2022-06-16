@@ -1,4 +1,7 @@
+import Users from '/imports/api/users';
 import { makeCall } from '/imports/ui/services/api';
+import Auth from '/imports/ui/services/auth';
+import PredefinedPolls from '/imports/api/predefined-polls';
 
 const sortUsers = (a, b) => {
   const sortByResponse = (a, b) => {
@@ -34,5 +37,14 @@ const sortUsers = (a, b) => {
 
 export default {
   sortUsers,
-  publishPoll: () => makeCall('publishPoll'),
+  // publishPoll: () => makeCall('publishPoll'),
+  getUser: userId => Users.findOne({ userId }),
+  publishPoll: (id) => {
+    console.log('[live-result] publishPoll', id);
+    makeCall('publishPoll');
+    if (id) {
+      makeCall('removePublishedPoll', Auth.meetingID, id);
+    }
+  },
+  predefinedPollById: id => PredefinedPolls.findOne({ meetingId: Auth.meetingID, id }),
 };

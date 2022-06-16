@@ -41,6 +41,14 @@ const FullscreenButtonWrapper = styled.div`
     }
   `}
 
+  ${({ theme }) => theme === 'blue' && `
+    background-color: #0F70D7;
+
+    & button i {
+      color: ${colorWhite};
+    }
+  `}
+
   ${({ position }) => position === 'bottom' && `
     bottom: 0;
   `}
@@ -71,7 +79,7 @@ const FullscreenButton = styled(Button)`
     }
 
     i {
-      font-size: 1rem;
+      font-size: 1.2rem;
     }
   `}
 `;

@@ -6,7 +6,7 @@ import Styled from './styles';
 
 const ViewActions = (props) => {
   const {
-    name, cameraId, videoContainer, isFullscreenContext, layoutContextDispatch,
+    name, cameraId, videoContainer, isFullscreenContext, layoutContextDispatch,btncolor
   } = props;
 
   const ALLOW_FULLSCREEN = Meteor.settings.public.app.allowFullscreen;
@@ -35,7 +35,9 @@ const ViewActions = (props) => {
         elementId={cameraId}
         elementGroup="webcams"
         isFullscreen={isFullscreenContext}
-        dark
+        // blue = {props?.color === 'blue'}
+        // dark = {props?.color !== 'blue'}
+        btncolor = {props?.btncolor ? props?.btncolor : 'dark'}
       />
     </Styled.FullscreenWrapper>
   );

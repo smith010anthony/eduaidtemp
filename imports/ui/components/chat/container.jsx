@@ -13,6 +13,16 @@ import lockContextContainer from '/imports/ui/components/lock-viewers/context/co
 import Chat from '/imports/ui/components/chat/component';
 import ChatService from './service';
 import { layoutSelect, layoutDispatch } from '../layout/context';
+import UserListService from '/imports/ui/components/user-list/service';
+import { PANELS, ACTIONS } from '../layout/enums';
+const {
+  getGroupChatPrivate,
+  getActiveChats,
+  hasPrivateChatBetweenUsers
+} = UserListService;
+
+
+import useContextUsers from '/imports/ui/components/components-data/users-context/service';
 
 const CHAT_CONFIG = Meteor.settings.public.chat;
 const PUBLIC_CHAT_KEY = CHAT_CONFIG.public_id;
@@ -223,6 +233,41 @@ const ChatContainer = (props) => {
     'role',
   );
 
+  let presenterUser=null;
+  //console.log('[ChatContainer] @edu14 users[Auth.meetingID]',users[Auth.meetingID]);
+  // users[Auth.meetingID].map((user)=>{
+  //   if(user.presenter===true ){
+  //     presenterUser=user;
+  //   }
+  // })
+
+  let usersObj= users[Auth.meetingID];
+  for (var key in usersObj) {
+    //if (usersObj.hasOwnProperty(key)) {
+      // console.log('[ChatContainer] @edu14 usersObj[key]',usersObj[key]);
+      if(usersObj[key] && usersObj[key].presenter ===true ){
+        // console.log('[ChatContainer] @edu14 usersObj[key].presenter',usersObj[key].presenter);
+        presenterUser=usersObj[key];
+        break;
+      }
+    //}
+  }
+
+  const { chats: groupChatsMessages } = usingChatContext;
+  const { groupChat: groupChats } = usingGroupChatContext;
+  const activeChats = getActiveChats({ groupChatsMessages, groupChats, users:users[Auth.meetingID] });
+  // console.log('[ChatContainer] @edu14 presenterUser',presenterUser);
+  // console.log('[ChatContainer] @edu14 presenterUser',activeChats);
+  activeChats.map((chat)=>{
+    if (chat.userId !== PUBLIC_CHAT_KEY && chat.userId === idChatOpen) {
+      // console.log('[ChatContainer] foundNewChat click @edu14', chat.userId,chat.chatId,idChatOpen);
+      layoutContextDispatch({
+        type: ACTIONS.SET_ID_CHAT_OPEN,
+        value: chat.chatId,
+      });
+    }
+  });
+
   return (
     <Chat {...{
       idChatOpen,
@@ -241,6 +286,11 @@ const ChatContainer = (props) => {
       layoutContextDispatch,
       lastTimeWindowValuesBuild,
       partnerIsLoggedOut,
+      getGroupChatPrivate,
+      currentUser,
+      presenterUser,
+      activeChats,
+      hasPrivateChatBetweenUsers
     }}
     >
       {children}
@@ -254,6 +304,9 @@ export default lockContextContainer(injectIntl(withTracker(({ intl, userLocks })
 
   const { connected: isMeteorConnected } = Meteor.status();
 
+  // const currentMeeting = Meetings.findOne({ meetingId: Auth.meetingID },
+  //   { fields: { lockSettingsProps: 1 } });
+
   return {
     intl,
     isChatLockedPublic,
@@ -264,5 +317,6 @@ export default lockContextContainer(injectIntl(withTracker(({ intl, userLocks })
     actions: {
       handleClosePrivateChat: ChatService.closePrivateChat,
     },
+    // lockSettingsProps: currentMeeting && currentMeeting.lockSettingsProps,
   };
 })(ChatContainer)));

@@ -54,7 +54,7 @@ function currentPoll(secretPoll) {
     return this.ready();
   }
 
-  Logger.warn(
+  Logger.info(
     'Publishing current-poll was requested by non-presenter connection',
     { meetingId, userId, connectionId: this.connection.id },
   );

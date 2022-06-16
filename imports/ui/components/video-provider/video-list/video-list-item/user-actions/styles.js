@@ -1,7 +1,8 @@
 import styled from 'styled-components';
-import { colorOffWhite } from '/imports/ui/stylesheets/styled-components/palette';
+import { colorOffWhite,colorTransparent } from '/imports/ui/stylesheets/styled-components/palette';
 import { TextElipsis, DivElipsis } from '/imports/ui/stylesheets/styled-components/placeholders';
 import { landscape, mediumUp } from '/imports/ui/stylesheets/styled-components/breakpoints';
+import Button from '/imports/ui/components/common/button/component';
 
 const DropdownTrigger = styled(DivElipsis)`
   position: relative;
@@ -70,9 +71,38 @@ const MenuWrapper = styled.div`
   max-width: 75%;
 `;
 
+const CommonButton = styled(Button)`
+    margin-right:5px;
+    background-color: rgba(0,0,0,.4) !important;
+    border: none !important;
+    // &:active,
+    // &:hover,
+    // &:focus {
+    //   background-color: ${colorTransparent} !important;
+    //   border: none !important;
+
+    //   i {
+    //     border: none !important;
+    //     background-color: ${colorTransparent} !important;
+    //   }
+    // }
+    padding: 5px;
+    margin-top: 2px;
+
+    &:hover {
+      border: 0;
+    }
+
+    svg {
+      font-size: 1.4rem;
+      color: var(--color-white,#FFF);
+    }
+`;
+
 export default {
   DropdownTrigger,
   UserName,
   Dropdown,
   MenuWrapper,
+  CommonButton
 };

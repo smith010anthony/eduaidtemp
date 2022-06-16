@@ -200,25 +200,37 @@ class SettingsDropdown extends PureComponent {
 
     this.getFullscreenItem(this.menuItems);
 
-    this.menuItems.push(
-      {
-        key: 'list-item-settings',
-        icon: 'settings',
-        dataTest: 'settings',
-        label: intl.formatMessage(intlMessages.settingsLabel),
-        // description: intl.formatMessage(intlMessages.settingsDesc),
-        onClick: () => mountModal(<SettingsMenuContainer />),
-      },
-      {
-        key: 'list-item-about',
-        icon: 'about',
-        label: intl.formatMessage(intlMessages.aboutLabel),
-        // description: intl.formatMessage(intlMessages.aboutDesc),
-        onClick: () => mountModal(<AboutContainer />),
-      },
-    );
+    // this.menuItems.push(
+    //   {
+    //     key: 'list-item-settings',
+    //     icon: 'settings',
+    //     dataTest: 'settings',
+    //     label: intl.formatMessage(intlMessages.settingsLabel),
+    //     // description: intl.formatMessage(intlMessages.settingsDesc),
+    //     onClick: () => mountModal(<SettingsMenuContainer />),
+    //   },
+    //   {
+    //     key: 'list-item-about',
+    //     icon: 'about',
+    //     label: intl.formatMessage(intlMessages.aboutLabel),
+    //     // description: intl.formatMessage(intlMessages.aboutDesc),
+    //     onClick: () => mountModal(<AboutContainer />),
+    //   },
+    // );
 
-    if (helpButton) {
+    if (amIModerator){
+      this.menuItems.push(
+        {
+          key: 'list-item-settings',
+          icon: 'settings',
+          dataTest: 'settings',
+          label: intl.formatMessage(intlMessages.settingsLabel),
+          // description: intl.formatMessage(intlMessages.settingsDesc),
+          onClick: () => mountModal(<SettingsMenuContainer />),
+        });
+    }
+
+    if (false && helpButton) {
       this.menuItems.push(
         {
           key: 'list-item-help',
@@ -231,16 +243,16 @@ class SettingsDropdown extends PureComponent {
       );
     }
 
-    this.menuItems.push(
-      {
-        key: 'list-item-shortcuts',
-        icon: 'shortcuts',
-        label: intl.formatMessage(intlMessages.hotkeysLabel),
-        // description: intl.formatMessage(intlMessages.hotkeysDesc),
-        onClick: () => mountModal(<ShortcutHelpComponent />),
-        divider: true,
-      },
-    );
+    // this.menuItems.push(
+    //   {
+    //     key: 'list-item-shortcuts',
+    //     icon: 'shortcuts',
+    //     label: intl.formatMessage(intlMessages.hotkeysLabel),
+    //     // description: intl.formatMessage(intlMessages.hotkeysDesc),
+    //     onClick: () => mountModal(<ShortcutHelpComponent />),
+    //     divider: true,
+    //   },
+    // );
 
     if (allowedToEndMeeting && isMeteorConnected) {
       this.menuItems.push(
@@ -254,21 +266,21 @@ class SettingsDropdown extends PureComponent {
       );
     }
 
-    if (allowLogoutSetting && isMeteorConnected) {
-      const customStyles = { color: colorDanger };
+    // if (allowLogoutSetting && isMeteorConnected) {
+    //   const customStyles = { color: colorDanger };
 
-      this.menuItems.push(
-        {
-          key: 'list-item-logout',
-          dataTest: 'logout',
-          icon: 'logout',
-          label: intl.formatMessage(intlMessages.leaveSessionLabel),
-          // description: intl.formatMessage(intlMessages.leaveSessionDesc),
-          customStyles,
-          onClick: () => this.leaveSession(),
-        },
-      );
-    }
+    //   this.menuItems.push(
+    //     {
+    //       key: 'list-item-logout',
+    //       dataTest: 'logout',
+    //       icon: 'logout',
+    //       label: intl.formatMessage(intlMessages.leaveSessionLabel),
+    //       // description: intl.formatMessage(intlMessages.leaveSessionDesc),
+    //       customStyles,
+    //       onClick: () => this.leaveSession(),
+    //     },
+    //   );
+    // }
 
     return this.menuItems;
   }

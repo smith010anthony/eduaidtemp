@@ -187,6 +187,16 @@ class MeetingEnded extends PureComponent {
         : intl.formatMessage(intlMessage.messageEndedByNoModeratorPlural, { 0: this.endWhenNoModeratorMinutes });
     }
 
+    if (code === '403' || code === 403) {
+      return 'You have been kicked out of the live class. Please do follow the provided guidelines in upcoming classes.';
+    }
+    if (code === '401' || code === 401) {
+      return meetingExist
+        ? 'You are not authorized to join this live class.'
+        : 'Live class already ended. Have a good day.';
+    }
+    return 'The live class has Ended. Thank you for participating.';
+
     if (this.meetingEndedBy) {
       return intl.formatMessage(intlMessage.messageEndedByUser, { 0: this.meetingEndedBy });
     }
@@ -255,11 +265,21 @@ class MeetingEnded extends PureComponent {
 
     const logMessage = ejectedReason === 'user_requested_eject_reason' ? 'User removed from the meeting' : 'Meeting ended component, no feedback configured';
     logger.info({ logCode: 'meeting_ended_code', extraInfo: { endedCode: code, reason: ejectedReason } }, logMessage);
-
+    const baseName = Meteor.settings.public.app.cdn + Meteor.settings.public.app.basename;
+    const imageUrl = `${baseName}/resources/images/eduaid-logo.png`;
     return (
       <Styled.Parent>
         <Styled.Modal>
           <Styled.Content>
+          <div style={{
+            display: 'block',
+            margin: 'auto',
+            marginTop: '20px',
+            marginBottom: '20px',
+          }}>
+            <img height="100" src={`${baseName}/resources/images/eduaid-logo.png`} alt="EduAid" />
+            
+          </div>
             <Styled.Title data-test="meetingEndedModalTitle">
               {this.getEndingMessage()}
             </Styled.Title>
@@ -282,16 +302,16 @@ class MeetingEnded extends PureComponent {
                       </Styled.Text>
                     ) : null
                 }
-                <Styled.Text>
+                {/* <Styled.Text>
                   {intl.formatMessage(intlMessage.messageEnded)}
-                </Styled.Text>
+                </Styled.Text> */}
 
-                <Styled.MeetingEndedButton
+                {/* <Styled.MeetingEndedButton
                   color="primary"
                   onClick={this.confirmRedirect}
                   label={intl.formatMessage(intlMessage.buttonOkay)}
                   description={intl.formatMessage(intlMessage.confirmDesc)}
-                />
+                /> */}
               </div>
             )}
           </Styled.Content>

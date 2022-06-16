@@ -51,6 +51,7 @@ const MessageList = styled(VirtualizedScrollboxVertical)`
     margin: 0 0 0 auto;
     padding: 0 0 0 ${mdPaddingX};
   }
+  background: none!important;
 `;
 
 export default {
